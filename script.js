@@ -29,8 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         oscillator.type = type;
         oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime + startTime);
 
-        gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime + startTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startTime + duration);
+        // A sharper, more "plucky" envelope for the coin sound
+        gainNode.gain.setValueAtTime(0.6, audioCtx.currentTime + startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startTime + duration * 1.5);
 
         oscillator.start(audioCtx.currentTime + startTime);
         oscillator.stop(audioCtx.currentTime + startTime + duration);
@@ -38,10 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function playSound(isSuccess) {
         if (isSuccess) {
-            // Play an ascending C major arpeggio for a rewarding sound
-            playNote(523.25, 0, 0.1);    // C5
-            playNote(659.25, 0.08, 0.1); // E5 slightly delayed
-            playNote(783.99, 0.16, 0.1); // G5 slightly delayed further
+            // Play a high C and G together for a "coin" sound.
+            playNote(1046.50, 0, 0.2); // C6
+            playNote(1567.98, 0, 0.2); // G6
         } else {
             // Play a low, dissonant tone for failure
             playNote(130.81, 0, 0.15, 'sawtooth'); // C3

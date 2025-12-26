@@ -2,17 +2,23 @@ body {
     margin: 0;
     padding: 0;
     width: 100vw;
+    min-height: calc(var(--vh, 1vh) * 100); /* Ensure body takes full viewport height */
     background-color: #1a1a1a;
     color: white;
     font-family: sans-serif;
     overflow: hidden;
+    display: flex; /* Use flexbox to push footer to bottom */
+    flex-direction: column;
 }
 
 /* Use the --vh variable for height, with a fallback to 100vh */
 #container {
     position: relative;
     width: 100%;
-    height: calc(var(--vh, 1vh) * 100);
+    flex-grow: 1; /* Allow container to grow and push footer down */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .circle {
@@ -75,4 +81,14 @@ body {
 
 .feedback.show {
     opacity: 1;
+}
+
+footer {
+    width: 100%;
+    padding: 10px 0;
+    text-align: center;
+    background-color: #2a2a2a;
+    color: #aaaaaa;
+    font-size: 0.8rem;
+    margin-top: auto; /* Push footer to the bottom */
 }

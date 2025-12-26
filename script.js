@@ -6,19 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let tooSlowTimeout = null;
 
     // --- Feedback Levels ---
-    // [delay, message, frequency, vibration]
+    // Added isSuccess flag to differentiate feedback types.
     const FEEDBACK_LEVELS = {
-        VERY_FAST: { delay: 80, message: 'Very Fast!', frequency: 700, vibration: [20, 20] },
-        FAST: { delay: 150, message: 'Fast!', frequency: 600, vibration: [50, 50] },
-        PERFECT: { delay: 250, message: 'Perfect!', frequency: 523, vibration: [200] },
-        SLOW: { delay: 400, message: 'Slow', frequency: 440, vibration: [100, 50, 100] },
-        TOO_SLOW: { message: 'Too Slow', frequency: 350, vibration: [50, 50, 50, 50, 50] }
+        VERY_FAST: { delay: 80, message: 'Very Fast!', isSuccess: false },
+        FAST:      { delay: 150, message: 'Fast!', isSuccess: true },
+        PERFECT:   { delay: 250, message: 'Perfect!', isSuccess: true },
+        SLOW:      { delay: 400, message: 'Slow', isSuccess: true },
+        TOO_SLOW:  { message: 'Too Slow', isSuccess: false }
     };
 
-    // Web Audio API setup
+    // --- Web Audio API Setup ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function playTone(frequency, duration) {
+    function playNote(frequency, startTime, duration, type = 'sine') {
         if (!audioCtx) return;
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
@@ -26,22 +26,34 @@ document.addEventListener('DOMContentLoaded', () => {
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
 
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime + startTime);
 
-        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
+        gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime + startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startTime + duration);
 
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + duration / 1000);
+        oscillator.start(audioCtx.currentTime + startTime);
+        oscillator.stop(audioCtx.currentTime + startTime + duration);
+    }
+
+    function playSound(isSuccess) {
+        if (isSuccess) {
+            // Play a pleasant, major chord for success
+            playNote(523.25, 0, 0.2); // C5
+            playNote(659.25, 0, 0.2); // E5
+        } else {
+            // Play a low, dissonant tone for failure
+            playNote(130.81, 0, 0.15, 'sawtooth'); // C3
+        }
     }
 
     // --- Haptic and Audio Feedback ---
     function giveFeedback(level) {
         showFeedback(level.message);
-        playTone(level.frequency, 200);
+        playSound(level.isSuccess);
         if (navigator.vibrate) {
-            navigator.vibrate(level.vibration);
+            // Distinct vibration for success (long) vs failure (short buzz)
+            navigator.vibrate(level.isSuccess ? 150 : [50, 50, 50]);
         }
     }
 

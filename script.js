@@ -38,9 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function playSound(isSuccess) {
         if (isSuccess) {
-            // Play a pleasant, major chord for success
-            playNote(523.25, 0, 0.2); // C5
-            playNote(659.25, 0, 0.2); // E5
+            // Play an ascending C major arpeggio for a rewarding sound
+            playNote(523.25, 0, 0.1);    // C5
+            playNote(659.25, 0.08, 0.1); // E5 slightly delayed
+            playNote(783.99, 0.16, 0.1); // G5 slightly delayed further
         } else {
             // Play a low, dissonant tone for failure
             playNote(130.81, 0, 0.15, 'sawtooth'); // C3

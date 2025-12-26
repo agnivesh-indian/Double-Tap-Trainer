@@ -1,21 +1,18 @@
 body {
     margin: 0;
     padding: 0;
-    height: 100vh;
     width: 100vw;
     background-color: #1a1a1a;
     color: white;
     font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: hidden;
 }
 
+/* Use the --vh variable for height, with a fallback to 100vh */
 #container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: calc(var(--vh, 1vh) * 100);
 }
 
 .circle {
@@ -27,6 +24,7 @@ body {
     cursor: pointer;
     transition: transform 0.1s ease, box-shadow 0.2s ease;
     box-shadow: 0 0 15px #00bcd4, 0 0 25px #00bcd4;
+    -webkit-tap-highlight-color: transparent; /* Disable the grey tap highlight on mobile */
 }
 
 .circle:focus {
@@ -63,15 +61,16 @@ body {
 
 .feedback {
     position: absolute;
-    bottom: 50%;
+    top: 50%; /* Centered vertically */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%); /* Centered perfectly */
     font-size: 1.5rem;
     padding: 10px 20px;
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.7);
     opacity: 0;
     transition: opacity 0.5s ease;
+    pointer-events: none; /* Make sure it doesn't block taps on the center circle */
 }
 
 .feedback.show {

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTap = 0;
     let lastTapTarget = null;
     let tooSlowTimeout = null;
+    let streak = 0;
 
     // --- Feedback Levels ---
     // Added isSuccess flag to differentiate feedback types.
@@ -48,13 +49,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function playYaySound() {
+        // A cheerful, ascending melody for "yay!"
+        playNote(523.25, 0, 0.1); // C5
+        playNote(659.25, 0.1, 0.1); // E5
+        playNote(783.99, 0.2, 0.1); // G5
+        playNote(1046.50, 0.3, 0.2); // C6
+    }
+
     // --- Haptic and Audio Feedback ---
     function giveFeedback(level) {
         showFeedback(level.message);
         playSound(level.isSuccess);
-        if (navigator.vibrate) {
-            // Distinct vibration for success (long) vs failure (short buzz)
-            navigator.vibrate(level.isSuccess ? 150 : [50, 50, 50]);
+
+        if (level.isSuccess) {
+            streak++;
+            if (streak === 10) {
+                showFeedback('10 in a row! Yay!');
+                playYaySound();
+                if (navigator.vibrate) {
+                    // A happy vibration pattern
+                    navigator.vibrate([100, 30, 100, 30, 100]);
+                }
+                streak = 0; // Reset after the celebration
+            } else {
+                if (navigator.vibrate) {
+                    navigator.vibrate(150);
+                }
+            }
+        } else {
+            streak = 0;
+            if (navigator.vibrate) {
+                // Distinct vibration for failure (short buzz)
+                navigator.vibrate([50, 50, 50]);
+            }
         }
     }
 
